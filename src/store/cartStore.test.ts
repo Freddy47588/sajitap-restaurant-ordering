@@ -10,15 +10,33 @@ const item: CartItem = {
   image: '',
   available: true,
   featured: false,
+  preparationTime: '10–15 menit',
   price: 10000,
   quantity: 2,
   note: '',
   cartId: 'a-1',
+  selectedOptions: [],
 }
 describe('cart calculations', () => {
   it('calculates total and item count', () => {
     expect(cartTotal([item])).toBe(20000)
     expect(cartItemCount([item])).toBe(2)
+  })
+
+  it('includes selected option prices in the total', () => {
+    const customized = {
+      ...item,
+      selectedOptions: [
+        {
+          groupId: 'addons',
+          groupName: 'Tambahan',
+          optionId: 'egg',
+          optionName: 'Extra Telur',
+          priceDelta: 5000,
+        },
+      ],
+    }
+    expect(cartTotal([customized])).toBe(30000)
   })
 })
 
@@ -39,5 +57,20 @@ describe('cart store behavior', () => {
     useCartStore.setState({ items: [item] })
     useCartStore.getState().removeItem(item.cartId)
     expect(useCartStore.getState().items).toEqual([])
+  })
+
+  it('keeps different customizations as separate cart entries', () => {
+    useCartStore.setState({ items: [] })
+    useCartStore.getState().addItem(item, 1, '', [])
+    useCartStore.getState().addItem(item, 1, '', [
+      {
+        groupId: 'addons',
+        groupName: 'Tambahan',
+        optionId: 'egg',
+        optionName: 'Extra Telur',
+        priceDelta: 5000,
+      },
+    ])
+    expect(useCartStore.getState().items).toHaveLength(2)
   })
 })

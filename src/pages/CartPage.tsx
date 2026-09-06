@@ -1,13 +1,22 @@
-import { ShoppingBag, Trash2 } from 'lucide-react'
-import { Link, useLocation } from 'react-router-dom'
+import { Pencil, ShoppingBag, Trash2 } from 'lucide-react'
+import { Link } from 'react-router-dom'
 import { QuantityStepper } from '../components/ui/QuantityStepper'
+import { useTableContext } from '../hooks/useTableContext'
 import { formatRupiah } from '../lib/format'
-import { withTable } from '../lib/table'
-import { cartItemCount, cartTotal, useCartStore } from '../store/cartStore'
+import {
+  cartItemCount,
+  cartItemSubtotal,
+  cartItemUnitPrice,
+  cartTotal,
+  optionTotal,
+  useCartStore,
+} from '../store/cartStore'
+import { useToastStore } from '../store/toastStore'
+
 export function CartPage() {
   const { items, removeItem, setQuantity } = useCartStore()
-  const location = useLocation()
-  const table = new URLSearchParams(location.search).get('table')
+  const { to } = useTableContext()
+  const showToast = useToastStore((state) => state.show)
   const total = cartTotal(items)
   if (!items.length)
     return (
@@ -21,7 +30,7 @@ export function CartPage() {
         </p>
         <Link
           className="bg-terracotta mt-7 inline-block rounded-xl px-5 py-3 font-bold text-white"
-          to={withTable('/menu', table)}
+          to={to('/menu')}
         >
           Lihat Menu
         </Link>
@@ -50,28 +59,66 @@ export function CartPage() {
                   <div>
                     <p className="font-bold">{item.name}</p>
                     <p className="mt-1 text-sm text-stone-500">
-                      {formatRupiah(item.price)}
+                      {formatRupiah(item.price)} harga menu
                     </p>
                   </div>
                   <button
-                    onClick={() => removeItem(item.cartId)}
+                    onClick={() => {
+                      removeItem(item.cartId)
+                      showToast(`${item.name} dihapus dari keranjang`, 'info')
+                    }}
                     aria-label={`Hapus ${item.name}`}
                     className="grid size-9 place-items-center rounded-full text-stone-400 hover:bg-red-50 hover:text-red-600"
                   >
                     <Trash2 size={18} />
                   </button>
                 </div>
+                {(item.selectedOptions ?? []).length > 0 && (
+                  <ul className="mt-2 text-sm text-stone-500">
+                    {item.selectedOptions.map((option) => (
+                      <li key={`${option.groupId}-${option.optionId}`}>
+                        {option.groupName}: {option.optionName}
+                        {option.priceDelta > 0 &&
+                          ` (+${formatRupiah(option.priceDelta)})`}
+                      </li>
+                    ))}
+                  </ul>
+                )}
                 {item.note && (
                   <p className="mt-2 text-sm text-stone-500">
                     Catatan: {item.note}
                   </p>
                 )}
+                <div className="mt-2 flex flex-wrap gap-x-3 text-xs text-stone-500">
+                  <span>
+                    Harga satuan {formatRupiah(cartItemUnitPrice(item))}
+                  </span>
+                  {optionTotal(item.selectedOptions ?? []) > 0 && (
+                    <span>
+                      Tambahan{' '}
+                      {formatRupiah(optionTotal(item.selectedOptions ?? []))}
+                    </span>
+                  )}
+                </div>
                 <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
                   <QuantityStepper
                     value={item.quantity}
-                    onChange={(value) => setQuantity(item.cartId, value)}
+                    onChange={(value) => {
+                      setQuantity(item.cartId, value)
+                      showToast('Jumlah pesanan diperbarui', 'info')
+                    }}
                   />
-                  <strong>{formatRupiah(item.price * item.quantity)}</strong>
+                  <div className="flex items-center gap-3">
+                    <Link
+                      to={to(
+                        `/menu/${item.id}?edit=${encodeURIComponent(item.cartId)}`,
+                      )}
+                      className="text-terracotta inline-flex items-center gap-1 text-sm font-semibold"
+                    >
+                      <Pencil size={14} /> Ubah
+                    </Link>
+                    <strong>{formatRupiah(cartItemSubtotal(item))}</strong>
+                  </div>
                 </div>
               </div>
             </article>
@@ -90,7 +137,7 @@ export function CartPage() {
             </div>
           </div>
           <Link
-            to={withTable('/checkout', table)}
+            to={to('/checkout')}
             className="text-ink mt-6 block rounded-xl bg-orange-300 px-4 py-3 text-center font-bold hover:bg-orange-200"
           >
             Lanjut Checkout

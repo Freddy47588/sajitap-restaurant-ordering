@@ -17,18 +17,20 @@ A warm, mobile-first restaurant table-ordering experience built for quick orderi
 
 ## 🍽️ Overview
 
-SajiTap modernizes an earlier Vue 2 culinary-ordering exercise into a focused customer experience. After scanning a table QR link, guests can browse local Indonesian dishes, customize an item, manage a persistent cart, and complete a simulated checkout without waiting for a server.
+SajiTap modernizes an earlier Vue 2 culinary-ordering exercise into a focused customer experience. After scanning a table QR link, guests can browse local Indonesian dishes, choose typed product options and add-ons, manage a persistent cart, and complete a simulated checkout without waiting for a server.
 
 The current release is intentionally frontend-only. Menu data is local, cart state is stored in the browser, and submitted restaurant orders are **not persisted to a server**.
 
 ## ✨ Features
 
 - Responsive, food-focused interface in Bahasa Indonesia
-- Menu search, category filters, availability states, and price sorting
-- Item detail with quantity controls, order notes, and a live subtotal
-- Persistent cart powered by Zustand and `localStorage`
+- Menu search, five food and drink categories, favorite filtering, availability states, and price sorting
+- Generic single- and multi-select product options with option-aware pricing
+- Item detail with preparation estimates, deterministic pairings, quantity controls, notes, and a live subtotal
+- Persistent cart with editable customizations powered by Zustand and `localStorage`
+- Locally persisted favorites, recently viewed menus, and lightweight toast feedback
 - Checkout validation, generated local order IDs, and confirmation details
-- Table context preserved across the complete flow with `?table=12`
+- Centralized table context preserved across the complete flow with `?table=12` or `/t/12`
 - Accessible controls, visible focus states, empty states, and a dedicated 404 page
 
 ## 📸 Preview
@@ -96,6 +98,12 @@ Open the local URL shown by Vite. To simulate scanning a table QR code, visit:
 http://localhost:5173/?table=12
 ```
 
+The stable table-entry route is also supported:
+
+```text
+http://localhost:5173/t/12
+```
+
 The query value follows internal ordering links and automatically prefills the checkout table field.
 
 ## 📜 Available Scripts
@@ -111,19 +119,20 @@ The query value follows internal ordering links and automatically prefills the c
 
 ## 📱 Screens & Routes
 
-| Route            | Screen                              |
-| ---------------- | ----------------------------------- |
-| `/`              | Landing page and featured menu      |
-| `/menu`          | Searchable menu catalog             |
-| `/menu/:id`      | Item detail and customization       |
-| `/cart`          | Cart review and quantity management |
-| `/checkout`      | Customer and table details          |
-| `/order-success` | Local order confirmation            |
-| `*`              | Not-found state                     |
+| Route             | Screen                              |
+| ----------------- | ----------------------------------- |
+| `/`               | Landing page and featured menu      |
+| `/t/:tableNumber` | Stable table entry route            |
+| `/menu`           | Searchable menu catalog             |
+| `/menu/:id`       | Item detail and customization       |
+| `/cart`           | Cart review and quantity management |
+| `/checkout`       | Customer and table details          |
+| `/order-success`  | Local order confirmation            |
+| `*`               | Not-found state                     |
 
 ## 🧪 Testing
 
-The focused unit suite covers Indonesian Rupiah formatting, cart totals and item counts, and cart quantity/update behavior.
+The focused unit suite covers Indonesian Rupiah formatting, option-aware cart totals, customization identity, cart behavior, and table-context utilities.
 
 ```bash
 npm test

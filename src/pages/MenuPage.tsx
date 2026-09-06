@@ -2,14 +2,19 @@ import { Search, SlidersHorizontal } from 'lucide-react'
 import { useState } from 'react'
 import { MenuCard } from '../components/menu/MenuCard'
 import { categories, menuItems } from '../data/menu'
+import { usePreferenceStore } from '../store/preferenceStore'
 export function MenuPage() {
   const [query, setQuery] = useState('')
   const [category, setCategory] = useState<(typeof categories)[number]>('Semua')
   const [sort, setSort] = useState('recommended')
+  const favoriteIds = usePreferenceStore((state) => state.favoriteIds)
   const filtered = menuItems
     .filter(
       (item) =>
-        (category === 'Semua' || item.category === category) &&
+        (category === 'Semua' ||
+          (category === 'Favorit'
+            ? favoriteIds.includes(item.id)
+            : item.category === category)) &&
         item.name.toLowerCase().includes(query.toLowerCase()),
     )
     .sort((a, b) =>

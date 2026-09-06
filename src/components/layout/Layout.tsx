@@ -1,19 +1,20 @@
 import { useState } from 'react'
-import { Link, NavLink, useLocation } from 'react-router-dom'
-import { Menu, ShoppingBag, X } from 'lucide-react'
+import { Link, NavLink } from 'react-router-dom'
+import { Menu, ShoppingBag, UtensilsCrossed, X } from 'lucide-react'
 import { cartItemCount, useCartStore } from '../../store/cartStore'
-import { withTable } from '../../lib/table'
+import { useTableContext } from '../../hooks/useTableContext'
+import { TableContextSync } from './TableContextSync'
+import { ToastViewport } from '../ui/ToastViewport'
 
 export function Layout({ children }: { children: React.ReactNode }) {
   const [open, setOpen] = useState(false)
-  const location = useLocation()
-  const table = new URLSearchParams(location.search).get('table')
+  const { tableNumber: table, to } = useTableContext()
   const count = useCartStore((state) => cartItemCount(state.items))
-  const to = (path: string) => withTable(path, table)
   const navClass = ({ isActive }: { isActive: boolean }) =>
     `transition hover:text-terracotta ${isActive ? 'text-terracotta font-semibold' : ''}`
   return (
     <div className="min-h-screen">
+      <TableContextSync />
       <header className="bg-cream/95 sticky top-0 z-30 border-b border-stone-200 backdrop-blur">
         <nav className="mx-auto flex h-18 max-w-6xl items-center justify-between px-4 sm:px-6">
           <Link
@@ -32,6 +33,12 @@ export function Layout({ children }: { children: React.ReactNode }) {
             </NavLink>
           </div>
           <div className="flex items-center gap-2">
+            {table && (
+              <span className="hidden items-center gap-1.5 rounded-full bg-orange-100 px-3 py-1.5 text-xs font-bold text-stone-700 sm:flex">
+                <UtensilsCrossed size={14} className="text-terracotta" /> Meja{' '}
+                {table}
+              </span>
+            )}
             <Link
               aria-label="Keranjang"
               to={to('/cart')}
@@ -85,6 +92,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
           <p>Restaurant table-ordering experience · Portfolio project</p>
         </div>
       </footer>
+      <ToastViewport />
     </div>
   )
 }

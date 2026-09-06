@@ -1,4 +1,65 @@
 import type { MenuItem } from '../types/menu'
+
+const spiceLevel = {
+  id: 'spice-level',
+  name: 'Tingkat Pedas',
+  required: true,
+  minSelect: 1,
+  maxSelect: 1,
+  options: [
+    { id: 'no-spice', name: 'Tidak Pedas', priceDelta: 0, available: true },
+    { id: 'medium', name: 'Sedang', priceDelta: 0, available: true },
+    { id: 'spicy', name: 'Pedas', priceDelta: 0, available: true },
+    {
+      id: 'extra-spicy',
+      name: 'Extra Pedas',
+      priceDelta: 2000,
+      available: true,
+    },
+  ],
+}
+
+const foodAddOns = {
+  id: 'add-ons',
+  name: 'Tambahan',
+  required: false,
+  minSelect: 0,
+  maxSelect: 3,
+  options: [
+    { id: 'extra-egg', name: 'Extra Telur', priceDelta: 5000, available: true },
+    {
+      id: 'extra-sambal',
+      name: 'Extra Sambal',
+      priceDelta: 2000,
+      available: true,
+    },
+    {
+      id: 'extra-rice',
+      name: 'Nasi Tambahan',
+      priceDelta: 6000,
+      available: true,
+    },
+  ],
+}
+
+const noodleAddOns = {
+  ...foodAddOns,
+  options: [
+    {
+      id: 'extra-meatballs',
+      name: 'Bakso Tambahan',
+      priceDelta: 6000,
+      available: true,
+    },
+    { id: 'cheese', name: 'Keju', priceDelta: 4000, available: true },
+    {
+      id: 'extra-sambal',
+      name: 'Extra Sambal',
+      priceDelta: 2000,
+      available: true,
+    },
+  ],
+}
 export const menuItems: MenuItem[] = [
   {
     id: 'sate-ayam',
@@ -11,6 +72,9 @@ export const menuItems: MenuItem[] = [
     image: '/assets/images/sate-ayam.jpg',
     available: true,
     featured: true,
+    preparationTime: '15–20 menit',
+    optionGroups: [spiceLevel, foodAddOns],
+    recommendedWith: ['es-teh-manis', 'kentang-goreng'],
   },
   {
     id: 'nasi-goreng-telur',
@@ -22,6 +86,9 @@ export const menuItems: MenuItem[] = [
     image: '/assets/images/nasi-goreng-telor.jpg',
     available: true,
     featured: true,
+    preparationTime: '10–15 menit',
+    optionGroups: [spiceLevel, foodAddOns],
+    recommendedWith: ['es-jeruk', 'pangsit'],
   },
   {
     id: 'nasi-rames',
@@ -34,6 +101,9 @@ export const menuItems: MenuItem[] = [
     image: '/assets/images/nasi-rames.jpg',
     available: true,
     featured: true,
+    preparationTime: '15–20 menit',
+    optionGroups: [spiceLevel, foodAddOns],
+    recommendedWith: ['es-teh-manis'],
   },
   {
     id: 'nasi-ayam-geprek',
@@ -45,6 +115,9 @@ export const menuItems: MenuItem[] = [
     image: '/assets/images/nasi-ayam-geprek.jpg',
     available: true,
     featured: false,
+    preparationTime: '15–20 menit',
+    optionGroups: [spiceLevel, foodAddOns],
+    recommendedWith: ['es-jeruk', 'kentang-goreng'],
   },
   {
     id: 'mie-ayam-bakso',
@@ -56,6 +129,9 @@ export const menuItems: MenuItem[] = [
     image: '/assets/images/mie-ayam-bakso.jpg',
     available: true,
     featured: true,
+    preparationTime: '10–15 menit',
+    optionGroups: [spiceLevel, noodleAddOns],
+    recommendedWith: ['es-teh-manis', 'pangsit'],
   },
   {
     id: 'mie-goreng',
@@ -67,6 +143,9 @@ export const menuItems: MenuItem[] = [
     image: '/assets/images/mie-goreng.jpg',
     available: true,
     featured: false,
+    preparationTime: '10–15 menit',
+    optionGroups: [spiceLevel, noodleAddOns],
+    recommendedWith: ['es-jeruk'],
   },
   {
     id: 'bakso',
@@ -78,6 +157,9 @@ export const menuItems: MenuItem[] = [
     image: '/assets/images/bakso.jpg',
     available: false,
     featured: false,
+    preparationTime: '12–18 menit',
+    optionGroups: [spiceLevel, noodleAddOns],
+    recommendedWith: ['es-teh-manis', 'pangsit'],
   },
   {
     id: 'pangsit',
@@ -89,6 +171,8 @@ export const menuItems: MenuItem[] = [
     image: '/assets/images/pangsit.jpg',
     available: true,
     featured: false,
+    preparationTime: '8–12 menit',
+    recommendedWith: ['mie-ayam-bakso', 'es-teh-manis'],
   },
   {
     id: 'kentang-goreng',
@@ -100,6 +184,16 @@ export const menuItems: MenuItem[] = [
     image: '/assets/images/kentang-goreng.jpg',
     available: true,
     featured: false,
+    preparationTime: '8–12 menit',
+    optionGroups: [
+      {
+        ...foodAddOns,
+        options: [
+          { id: 'cheese', name: 'Keju', priceDelta: 4000, available: true },
+        ],
+      },
+    ],
+    recommendedWith: ['sate-ayam', 'es-jeruk'],
   },
   {
     id: 'lontong-opor-ayam',
@@ -111,13 +205,103 @@ export const menuItems: MenuItem[] = [
     image: '/assets/images/lontong-opor-ayam.jpg',
     available: true,
     featured: true,
+    preparationTime: '18–25 menit',
+    optionGroups: [spiceLevel, foodAddOns],
+    recommendedWith: ['es-teh-manis', 'pisang-goreng'],
+  },
+  {
+    id: 'es-teh-manis',
+    code: 'MN-01',
+    name: 'Es Teh Manis',
+    description: 'Teh melati segar dengan tingkat kemanisan yang pas.',
+    price: 7000,
+    category: 'Minuman',
+    image: '/assets/images/es-teh-manis.svg',
+    available: true,
+    featured: true,
+    preparationTime: '3–5 menit',
+    recommendedWith: ['nasi-goreng-telur', 'sate-ayam'],
+  },
+  {
+    id: 'es-jeruk',
+    code: 'MN-02',
+    name: 'Es Jeruk Segar',
+    description: 'Perasan jeruk asli yang segar, disajikan dingin.',
+    price: 10000,
+    category: 'Minuman',
+    image: '/assets/images/es-jeruk.svg',
+    available: true,
+    featured: false,
+    preparationTime: '3–5 menit',
+    recommendedWith: ['nasi-ayam-geprek'],
+  },
+  {
+    id: 'kopi-susu',
+    code: 'MN-03',
+    name: 'Kopi Susu Gula Aren',
+    description: 'Espresso, susu segar, dan gula aren dengan rasa seimbang.',
+    price: 16000,
+    category: 'Minuman',
+    image: '/assets/images/kopi-susu.svg',
+    available: true,
+    featured: false,
+    preparationTime: '5–8 menit',
+    recommendedWith: ['pisang-goreng'],
+  },
+  {
+    id: 'pisang-goreng',
+    code: 'DS-01',
+    name: 'Pisang Goreng Keju',
+    description:
+      'Pisang goreng hangat dengan keju parut dan susu kental manis.',
+    price: 15000,
+    category: 'Dessert',
+    image: '/assets/images/pisang-goreng.svg',
+    available: true,
+    featured: true,
+    preparationTime: '8–12 menit',
+    optionGroups: [
+      {
+        id: 'topping',
+        name: 'Topping',
+        required: false,
+        minSelect: 0,
+        maxSelect: 2,
+        options: [
+          { id: 'cheese', name: 'Keju', priceDelta: 4000, available: true },
+          {
+            id: 'chocolate',
+            name: 'Cokelat',
+            priceDelta: 3000,
+            available: true,
+          },
+        ],
+      },
+    ],
+    recommendedWith: ['kopi-susu'],
+  },
+  {
+    id: 'puding-cokelat',
+    code: 'DS-02',
+    name: 'Puding Cokelat',
+    description: 'Puding cokelat lembut dengan saus vanila ringan.',
+    price: 12000,
+    category: 'Dessert',
+    image: '/assets/images/puding-cokelat.svg',
+    available: true,
+    featured: false,
+    preparationTime: '3–5 menit',
+    recommendedWith: ['kopi-susu'],
   },
 ]
 export const categories = [
   'Semua',
+  'Favorit',
   'Makanan Utama',
   'Mie & Bakso',
   'Camilan',
+  'Minuman',
+  'Dessert',
 ] as const
 export const getMenuItem = (id: string) =>
   menuItems.find((item) => item.id === id)

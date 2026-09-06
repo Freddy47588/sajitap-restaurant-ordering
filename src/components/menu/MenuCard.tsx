@@ -1,11 +1,16 @@
-import { ArrowUpRight, CircleAlert } from 'lucide-react'
-import { Link, useLocation } from 'react-router-dom'
+import { ArrowUpRight, CircleAlert, Clock3, Heart } from 'lucide-react'
+import { Link } from 'react-router-dom'
 import type { MenuItem } from '../../types/menu'
 import { formatRupiah } from '../../lib/format'
-import { withTable } from '../../lib/table'
+import { useTableContext } from '../../hooks/useTableContext'
+import { usePreferenceStore } from '../../store/preferenceStore'
+import { useToastStore } from '../../store/toastStore'
 export function MenuCard({ item }: { item: MenuItem }) {
-  const location = useLocation()
-  const table = new URLSearchParams(location.search).get('table')
+  const { to } = useTableContext()
+  const favoriteIds = usePreferenceStore((state) => state.favoriteIds)
+  const toggleFavorite = usePreferenceStore((state) => state.toggleFavorite)
+  const showToast = useToastStore((state) => state.show)
+  const favorite = favoriteIds.includes(item.id)
   return (
     <article className="overflow-hidden rounded-2xl border border-stone-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-lg">
       <div className="relative aspect-[4/3] overflow-hidden">
@@ -26,6 +31,28 @@ export function MenuCard({ item }: { item: MenuItem }) {
         >
           {item.available ? 'Tersedia' : 'Habis'}
         </span>
+        <button
+          type="button"
+          aria-label={
+            favorite
+              ? `Hapus ${item.name} dari favorit`
+              : `Simpan ${item.name} sebagai favorit`
+          }
+          aria-pressed={favorite}
+          onClick={() => {
+            const saved = toggleFavorite(item.id)
+            showToast(
+              saved ? 'Menu disimpan ke favorit' : 'Menu dihapus dari favorit',
+              'info',
+            )
+          }}
+          className="absolute top-3 right-3 grid size-9 place-items-center rounded-full bg-white/95 text-stone-500 shadow-sm hover:text-red-600"
+        >
+          <Heart
+            size={18}
+            className={favorite ? 'fill-red-500 text-red-500' : ''}
+          />
+        </button>
       </div>
       <div className="p-4">
         <p className="text-terracotta text-xs font-semibold tracking-wide uppercase">
@@ -35,15 +62,18 @@ export function MenuCard({ item }: { item: MenuItem }) {
           <h3 className="text-lg leading-tight font-bold">{item.name}</h3>
           <Link
             aria-label={`Lihat ${item.name}`}
-            to={withTable(`/menu/${item.id}`, table)}
+            to={to(`/menu/${item.id}`)}
             className="text-terracotta hover:bg-terracotta grid size-8 shrink-0 place-items-center rounded-full bg-orange-50 hover:text-white"
           >
             <ArrowUpRight size={17} />
           </Link>
         </div>
-        <p className="mt-2 text-sm text-stone-500">
-          {formatRupiah(item.price)}
-        </p>
+        <div className="mt-2 flex items-center justify-between gap-2 text-sm text-stone-500">
+          <span>{formatRupiah(item.price)}</span>
+          <span className="flex items-center gap-1">
+            <Clock3 size={14} /> {item.preparationTime}
+          </span>
+        </div>
         {!item.available && (
           <p className="mt-3 flex items-center gap-1 text-xs text-stone-500">
             <CircleAlert size={13} /> Akan tersedia kembali segera

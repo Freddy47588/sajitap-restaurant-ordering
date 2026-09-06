@@ -1,18 +1,29 @@
 import { useState } from 'react'
 import { Navigate, useLocation, useNavigate } from 'react-router-dom'
 import { formatRupiah, makeOrderId } from '../lib/format'
+import { estimateOrderPreparation } from '../lib/preparation'
 import { withTable } from '../lib/table'
-import { cartItemCount, cartTotal, useCartStore } from '../store/cartStore'
+import {
+  cartItemCount,
+  cartItemSubtotal,
+  cartTotal,
+  useCartStore,
+} from '../store/cartStore'
 import { useOrderStore } from '../store/orderStore'
+import { useTableContext } from '../hooks/useTableContext'
+import { useToastStore } from '../store/toastStore'
 export function CheckoutPage() {
   const { items, clearCart } = useCartStore()
   const setLatestOrder = useOrderStore((state) => state.setLatestOrder)
   const location = useLocation()
   const navigate = useNavigate()
-  const queryTable = new URLSearchParams(location.search).get('table') ?? ''
+  const { tableNumber } = useTableContext()
+  const queryTable =
+    tableNumber ?? new URLSearchParams(location.search).get('table') ?? ''
   const [name, setName] = useState('')
   const [table, setTable] = useState(queryTable)
   const [errors, setErrors] = useState<{ name?: string; table?: string }>({})
+  const showToast = useToastStore((state) => state.show)
   if (!items.length)
     return <Navigate to={withTable('/cart', queryTable)} replace />
   const total = cartTotal(items)
@@ -30,7 +41,9 @@ export function CheckoutPage() {
       tableNumber: table.trim(),
       total,
       itemCount: cartItemCount(items),
+      preparationTime: estimateOrderPreparation(items),
     })
+    showToast('Pesanan berhasil dikirim')
     clearCart()
     navigate(withTable('/order-success', table.trim()))
   }
@@ -73,6 +86,7 @@ export function CheckoutPage() {
                 aria-describedby={errors.table ? 'table-error' : undefined}
                 className="focus:border-terracotta mt-2 w-full rounded-xl border border-stone-300 p-3 font-normal outline-none"
                 placeholder="Contoh: 12"
+                readOnly={Boolean(tableNumber)}
               />
             </label>
             {errors.table && (
@@ -93,10 +107,14 @@ export function CheckoutPage() {
                 <span>
                   {item.quantity}× {item.name}
                 </span>
-                <strong>{formatRupiah(item.price * item.quantity)}</strong>
+                <strong>{formatRupiah(cartItemSubtotal(item))}</strong>
               </li>
             ))}
           </ul>
+          <div className="mt-5 flex justify-between border-t border-orange-200 pt-4 text-sm">
+            <span>Estimasi siap</span>
+            <strong>{estimateOrderPreparation(items)}</strong>
+          </div>
           <div className="mt-5 flex justify-between border-t border-orange-200 pt-4 text-lg font-bold">
             <span>Total</span>
             <span>{formatRupiah(total)}</span>

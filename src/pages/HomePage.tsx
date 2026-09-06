@@ -5,16 +5,19 @@ import {
   ScanLine,
   Utensils,
 } from 'lucide-react'
-import { Link, useLocation } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { menuItems } from '../data/menu'
-import { withTable } from '../lib/table'
 import { MenuCard } from '../components/menu/MenuCard'
 import heroImage from '../assets/images/hero.png'
+import { useTableContext } from '../hooks/useTableContext'
+import { usePreferenceStore } from '../store/preferenceStore'
 
 export function HomePage() {
-  const location = useLocation()
-  const table = new URLSearchParams(location.search).get('table')
-  const to = (path: string) => withTable(path, table)
+  const { tableNumber: table, to } = useTableContext()
+  const recentIds = usePreferenceStore((state) => state.recentIds)
+  const recentItems = recentIds
+    .map((id) => menuItems.find((item) => item.id === id))
+    .filter((item) => item !== undefined)
   return (
     <>
       <section className="mx-auto grid max-w-6xl gap-10 px-4 py-10 sm:px-6 lg:grid-cols-2 lg:items-center lg:py-18">
@@ -72,6 +75,19 @@ export function HomePage() {
           </div>
         </div>
       </section>
+      {recentItems.length > 0 && (
+        <section className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
+          <p className="text-terracotta text-sm font-bold tracking-widest uppercase">
+            Baru dilihat
+          </p>
+          <h2 className="font-display mt-2 text-3xl">Lanjutkan pilihan Anda</h2>
+          <div className="mt-7 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+            {recentItems.slice(0, 4).map((item) => (
+              <MenuCard key={item.id} item={item} />
+            ))}
+          </div>
+        </section>
+      )}
       <section className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
         <div className="flex items-end justify-between">
           <div>

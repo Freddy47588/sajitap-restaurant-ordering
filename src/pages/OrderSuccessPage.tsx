@@ -55,6 +55,10 @@ export function OrderSuccessPage() {
               {formatRupiah(order.total)}
             </p>
           </div>
+          <div>
+            <p className="text-sm text-stone-500">Estimasi siap</p>
+            <p className="mt-1 font-bold">{order.preparationTime}</p>
+          </div>
         </div>
       </div>
       <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:justify-center">
