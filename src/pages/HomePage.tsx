@@ -6,18 +6,22 @@ import {
   Utensils,
 } from 'lucide-react'
 import { Link } from 'react-router-dom'
-import { menuItems } from '../data/menu'
 import { MenuCard } from '../components/menu/MenuCard'
+import { MenuErrorState, MenuLoadingState } from '../components/ui/DataState'
+import { useMenuCatalog } from '../hooks/useMenuCatalog'
 import heroImage from '../assets/images/hero.png'
 import { useTableContext } from '../hooks/useTableContext'
 import { usePreferenceStore } from '../store/preferenceStore'
 
 export function HomePage() {
   const { tableNumber: table, to } = useTableContext()
+  const { items: menuItems, loading, error, retry } = useMenuCatalog()
   const recentIds = usePreferenceStore((state) => state.recentIds)
   const recentItems = recentIds
     .map((id) => menuItems.find((item) => item.id === id))
     .filter((item) => item !== undefined)
+  if (loading) return <MenuLoadingState />
+  if (error) return <MenuErrorState message={error} onRetry={retry} />
   return (
     <>
       <section className="mx-auto grid max-w-6xl gap-10 px-4 py-10 sm:px-6 lg:grid-cols-2 lg:items-center lg:py-18">

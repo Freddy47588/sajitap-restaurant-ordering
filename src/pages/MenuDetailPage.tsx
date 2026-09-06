@@ -3,7 +3,8 @@ import { useEffect, useMemo, useState } from 'react'
 import { Link, useParams, useSearchParams } from 'react-router-dom'
 import { MenuCard } from '../components/menu/MenuCard'
 import { QuantityStepper } from '../components/ui/QuantityStepper'
-import { getMenuItem } from '../data/menu'
+import { MenuErrorState, MenuLoadingState } from '../components/ui/DataState'
+import { useMenuCatalog } from '../hooks/useMenuCatalog'
 import { useTableContext } from '../hooks/useTableContext'
 import { formatRupiah } from '../lib/format'
 import { optionTotal, useCartStore } from '../store/cartStore'
@@ -89,7 +90,8 @@ function OptionGroup({
 export function MenuDetailPage() {
   const { id } = useParams()
   const [searchParams] = useSearchParams()
-  const item = getMenuItem(id ?? '')
+  const { items: menuItems, loading, error, retry, getById } = useMenuCatalog()
+  const item = getById(id ?? '')
   const editId = searchParams.get('edit')
   const editingItem = useCartStore((state) =>
     state.items.find((entry) => entry.cartId === editId),
@@ -111,14 +113,19 @@ export function MenuDetailPage() {
   const recommendations = useMemo(
     () =>
       item?.recommendedWith
-        ?.map(getMenuItem)
+        ?.map((recommendedId) =>
+          menuItems.find((entry) => entry.id === recommendedId),
+        )
         .filter((entry) => entry !== undefined) ?? [],
-    [item],
+    [item, menuItems],
   )
 
   useEffect(() => {
     if (item) addRecentlyViewed(item.id)
   }, [addRecentlyViewed, item])
+
+  if (loading) return <MenuLoadingState />
+  if (error) return <MenuErrorState message={error} onRetry={retry} />
 
   if (!item)
     return (

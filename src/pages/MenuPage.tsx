@@ -1,13 +1,18 @@
 import { Search, SlidersHorizontal } from 'lucide-react'
 import { useState } from 'react'
 import { MenuCard } from '../components/menu/MenuCard'
-import { categories, menuItems } from '../data/menu'
+import { MenuErrorState, MenuLoadingState } from '../components/ui/DataState'
+import { useMenuCatalog } from '../hooks/useMenuCatalog'
+import { categories } from '../data/menu'
 import { usePreferenceStore } from '../store/preferenceStore'
 export function MenuPage() {
   const [query, setQuery] = useState('')
   const [category, setCategory] = useState<(typeof categories)[number]>('Semua')
   const [sort, setSort] = useState('recommended')
   const favoriteIds = usePreferenceStore((state) => state.favoriteIds)
+  const { items: menuItems, loading, error, retry } = useMenuCatalog()
+  if (loading) return <MenuLoadingState />
+  if (error) return <MenuErrorState message={error} onRetry={retry} />
   const filtered = menuItems
     .filter(
       (item) =>

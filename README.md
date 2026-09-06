@@ -19,7 +19,7 @@ A warm, mobile-first restaurant table-ordering experience built for quick orderi
 
 SajiTap modernizes an earlier Vue 2 culinary-ordering exercise into a focused customer experience. After scanning a table QR link, guests can browse local Indonesian dishes, choose typed product options and add-ons, manage a persistent cart, and complete a simulated checkout without waiting for a server.
 
-The current release is intentionally frontend-only. Menu data is local, cart state is stored in the browser, and submitted restaurant orders are **not persisted to a server**.
+The application now includes a Supabase-ready relational schema, seed data, RLS foundations, and a centralized asynchronous menu repository. Local catalog mode remains available explicitly for frontend development. Submitted restaurant orders are **not persisted yet**; trusted order creation is the next phase.
 
 ## ✨ Features
 
@@ -33,6 +33,8 @@ The current release is intentionally frontend-only. Menu data is local, cart sta
 - Centralized table context preserved across the complete flow with `?table=12` or `/t/12`
 - Typed restaurant-table catalog with active/inactive validation and unavailable-table handling
 - Locally generated table QR codes with copy, PNG download, and print actions
+- Supabase-ready menu repository with loading, retry, and explicit failure states
+- Postgres schema, development seed, staff-role model, and initial Row Level Security policies
 - Accessible controls, visible focus states, empty states, and a dedicated 404 page
 
 ## 📸 Preview
@@ -61,6 +63,7 @@ QR/table link → Home → Menu → Item detail → Cart → Checkout → Order 
 | Tailwind CSS | Responsive styling and design tokens    |
 | React Router | Client-side routes and table-query flow |
 | Zustand      | Persistent cart and local order state   |
+| Supabase     | Postgres, Auth, RLS, and backend client |
 | Vitest       | Focused unit tests                      |
 | Lucide React | Accessible interface icons              |
 
@@ -70,10 +73,12 @@ QR/table link → Home → Menu → Item detail → Cart → Checkout → Order 
 src/
 ├── assets/           # Source-managed hero imagery
 ├── components/       # Layout, menu, cart, and reusable UI
-├── data/menu.ts      # Typed local menu catalog
+├── context/          # Shared asynchronous catalog state
+├── data/menu.ts      # Development-mode menu catalog
 ├── lib/              # Currency formatting and route helpers
 ├── pages/            # Route-level screens
 ├── store/            # Persistent cart and transient order state
+├── services/         # Supabase-aware data repositories
 ├── types/            # Shared domain types
 ├── App.tsx
 └── main.tsx
@@ -81,6 +86,10 @@ src/
 public/
 ├── assets/images/    # Static menu photography
 └── brand/            # SajiTap logo and favicon
+
+supabase/
+├── migrations/       # Versioned database schema and RLS
+└── seed.sql           # Demo restaurant catalog
 ```
 
 The local data layer is kept separate from UI code so it can later be replaced by a backend integration without rebuilding the presentation layer.
@@ -93,6 +102,16 @@ cd sajitap-restaurant-ordering
 npm install
 npm run dev
 ```
+
+Copy `.env.example` to `.env.local`. The example uses the explicit local data mode. See [`docs/database.md`](docs/database.md) for Supabase CLI setup and database security notes.
+
+### Environment variables
+
+| Variable                 | Purpose                                      |
+| ------------------------ | -------------------------------------------- |
+| `VITE_DATA_MODE`         | `local` for development or `supabase`        |
+| `VITE_SUPABASE_URL`      | Supabase project URL                         |
+| `VITE_SUPABASE_ANON_KEY` | Public browser key; never use a service role |
 
 Open the local URL shown by Vite. To simulate scanning a table QR code, visit:
 
@@ -135,7 +154,7 @@ The query value follows internal ordering links and automatically prefills the c
 
 ## 🧪 Testing
 
-The focused unit suite covers Indonesian Rupiah formatting, option-aware cart totals, customization identity, cart behavior, table-context utilities, and table-catalog integrity.
+The focused unit suite covers Indonesian Rupiah formatting, option-aware cart totals, customization identity, cart behavior, table-context utilities, table-catalog integrity, and the development menu repository.
 
 ```bash
 npm test
@@ -143,7 +162,7 @@ npm test
 
 ## 🗺️ Roadmap
 
-- Supabase backend and real order persistence
+- Trusted Supabase order creation and persistent order tracking
 - Restaurant administration and kitchen order statuses
 - Supabase-backed table and QR management
 - Staff authentication and role management
