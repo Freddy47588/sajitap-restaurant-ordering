@@ -1,0 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap');
+@import "tailwindcss";
+@theme { --font-sans: "DM Sans", sans-serif; --font-display: "Playfair Display", serif; --color-terracotta: #9f3c20; --color-cream: #fffaf4; --color-ink: #29201c; }
+@layer base { body { @apply bg-cream font-sans text-ink antialiased; } button, a, input, textarea, select { @apply focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-terracotta; } }
