@@ -7,4 +7,18 @@ import { MenuDetailPage } from './pages/MenuDetailPage'
 import { MenuPage } from './pages/MenuPage'
 import { NotFoundPage } from './pages/NotFoundPage'
 import { OrderSuccessPage } from './pages/OrderSuccessPage'
-export default function App() { return <Layout><Routes><Route path="/" element={<HomePage/>}/><Route path="/menu" element={<MenuPage/>}/><Route path="/menu/:id" element={<MenuDetailPage/>}/><Route path="/cart" element={<CartPage/>}/><Route path="/checkout" element={<CheckoutPage/>}/><Route path="/order-success" element={<OrderSuccessPage/>}/><Route path="*" element={<NotFoundPage/>}/></Routes></Layout> }
+export default function App() {
+  return (
+    <Layout>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/menu" element={<MenuPage />} />
+        <Route path="/menu/:id" element={<MenuDetailPage />} />
+        <Route path="/cart" element={<CartPage />} />
+        <Route path="/checkout" element={<CheckoutPage />} />
+        <Route path="/order-success" element={<OrderSuccessPage />} />
+        <Route path="*" element={<NotFoundPage />} />
+      </Routes>
+    </Layout>
+  )
+}

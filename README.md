@@ -1,91 +1,148 @@
+<div align="center">
+  <img src="public/brand/sajitap-logo.svg" alt="SajiTap logo" width="96" />
+
 # SajiTap
 
 **Tap. Order. Enjoy.**
 
-A modern, mobile-first restaurant table-ordering web application rebuilt from a legacy Vue 2 culinary ordering project using React, Vite, and TypeScript.
+A warm, mobile-first restaurant table-ordering experience built for quick ordering from a QR-linked table.
 
-## Overview
+![React](https://img.shields.io/badge/React-19-149ECA?logo=react&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white)
+![Vite](https://img.shields.io/badge/Vite-6-646CFF?logo=vite&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4-06B6D4?logo=tailwindcss&logoColor=white)
+![Zustand](https://img.shields.io/badge/State-Zustand-433E38)
+![Portfolio](https://img.shields.io/badge/Project-Portfolio-9F3C20)
+</div>
 
-SajiTap simulates the customer journey after scanning a table QR code: browse a curated menu, configure an item, manage a persistent cart, and place an order. It is frontend-only, using local menu data and browser storage.
+## 🍽️ Overview
 
-## Features
+SajiTap modernizes an earlier Vue 2 culinary-ordering exercise into a focused customer experience. After scanning a table QR link, guests can browse local Indonesian dishes, customize an item, manage a persistent cart, and complete a simulated checkout without waiting for a server.
 
-- Responsive, food-focused customer ordering experience in Bahasa Indonesia
-- Search, category filters, availability states, and price sorting
-- Item detail with quantity, order note, and live subtotal
-- Persistent cart powered by Zustand and localStorage
-- Checkout validation, generated local order IDs, and order confirmation
-- Optional table context preserved from `?table=12`
-- Accessible controls, focus states, empty states, unavailable products, and 404 page
+The current release is intentionally frontend-only. Menu data is local, cart state is stored in the browser, and submitted restaurant orders are **not persisted to a server**.
 
-## User Flow
+## ✨ Features
 
-`QR/table link → menu → item detail → cart → checkout → order success`
+- Responsive, food-focused interface in Bahasa Indonesia
+- Menu search, category filters, availability states, and price sorting
+- Item detail with quantity controls, order notes, and a live subtotal
+- Persistent cart powered by Zustand and `localStorage`
+- Checkout validation, generated local order IDs, and confirmation details
+- Table context preserved across the complete flow with `?table=12`
+- Accessible controls, visible focus states, empty states, and a dedicated 404 page
 
-## Tech Stack
+## 📸 Preview
 
-- React + TypeScript, Vite, React Router, Tailwind CSS
-- Zustand with persist middleware, Lucide React, Vitest
+Project screenshots can be added without changing the README structure:
 
-## Architecture / Project Structure
+| Home                        | Menu                        | Cart                        |
+| --------------------------- | --------------------------- | --------------------------- |
+| `docs/screenshots/home.png` | `docs/screenshots/menu.png` | `docs/screenshots/cart.png` |
+
+> Screenshots are intentionally not embedded until real captures are added to these paths.
+
+## 🔄 User Flow
+
+```text
+QR/table link → Home → Menu → Item detail → Cart → Checkout → Order success
+```
+
+## 🛠️ Tech Stack
+
+| Technology   | Purpose                                 |
+| ------------ | --------------------------------------- |
+| React        | Component-based user interface          |
+| TypeScript   | Static types and domain modeling        |
+| Vite         | Development server and production build |
+| Tailwind CSS | Responsive styling and design tokens    |
+| React Router | Client-side routes and table-query flow |
+| Zustand      | Persistent cart and local order state   |
+| Vitest       | Focused unit tests                      |
+| Lucide React | Accessible interface icons              |
+
+## 🏗️ Architecture
 
 ```text
 src/
-├── components/       # Layout, menu cards, reusable UI
+├── assets/           # Source-managed hero imagery
+├── components/       # Layout, menu, cart, and reusable UI
 ├── data/menu.ts      # Typed local menu catalog
-├── lib/              # Formatting and route helpers
+├── lib/              # Currency formatting and route helpers
 ├── pages/            # Route-level screens
 ├── store/            # Persistent cart and transient order state
 ├── types/            # Shared domain types
 ├── App.tsx
 └── main.tsx
+
+public/
+├── assets/images/    # Static menu photography
+└── brand/            # SajiTap logo and favicon
 ```
 
-## Getting Started
+The local data layer is kept separate from UI code so it can later be replaced by a backend integration without rebuilding the presentation layer.
+
+## 🚀 Getting Started
 
 ```bash
+git clone https://github.com/Freddy47588/sajitap-restaurant-ordering.git
+cd sajitap-restaurant-ordering
 npm install
 npm run dev
 ```
 
-## Available Scripts
+Open the local URL shown by Vite. To simulate scanning a table QR code, visit:
 
-| Command | Description |
-| --- | --- |
-| `npm run dev` | Start the Vite development server |
-| `npm run build` | Type-check and create a production build |
-| `npm run lint` | Run ESLint |
-| `npm test` | Run the Vitest suite |
+```text
+http://localhost:5173/?table=12
+```
 
-## Demo Ordering Flow
+The query value follows internal ordering links and automatically prefills the checkout table field.
 
-Choose an available dish, set a quantity and optional instruction, review the cart, enter a name and table number, then submit the order.
+## 📜 Available Scripts
 
-## QR/Table Query Example
+| Command                | Description                              |
+| ---------------------- | ---------------------------------------- |
+| `npm run dev`          | Start the Vite development server        |
+| `npm run build`        | Type-check and create a production build |
+| `npm run lint`         | Run ESLint                               |
+| `npm test`             | Run the Vitest suite once                |
+| `npm run format`       | Format project files with Prettier       |
+| `npm run format:check` | Verify formatting without changing files |
 
-Open `/?table=12` or `/menu?table=12`. The table number is carried through internal navigation and prefilled at checkout.
+## 📱 Screens & Routes
 
-## Screens / Routes
+| Route            | Screen                              |
+| ---------------- | ----------------------------------- |
+| `/`              | Landing page and featured menu      |
+| `/menu`          | Searchable menu catalog             |
+| `/menu/:id`      | Item detail and customization       |
+| `/cart`          | Cart review and quantity management |
+| `/checkout`      | Customer and table details          |
+| `/order-success` | Local order confirmation            |
+| `*`              | Not-found state                     |
 
-| Route | Screen |
-| --- | --- |
-| `/` | Home and featured menu |
-| `/menu` | Searchable menu catalog |
-| `/menu/:id` | Item customization |
-| `/cart` | Cart review |
-| `/checkout` | Customer and table details |
-| `/order-success` | Order confirmation |
+## 🧪 Testing
 
-## Future Improvements
+The focused unit suite covers Indonesian Rupiah formatting, cart totals and item counts, and cart quantity/update behavior.
+
+```bash
+npm test
+```
+
+## 🗺️ Roadmap
 
 - Supabase backend and real order persistence
-- Restaurant admin dashboard and kitchen order statuses
-- QR-code generation per table, staff authentication, and real-time order updates
+- Restaurant administration and kitchen order statuses
+- QR-code generation for each table
+- Staff authentication and role management
+- Real-time order updates
 
-## Legacy Modernization
+These items are planned improvements and are not part of the current frontend demo.
 
-This is a modernization/remake of an earlier Vue 2 culinary ordering project. The Vue CLI, BootstrapVue, toast plugin, Axios calls, and external My JSON Server dependency were removed. Food photography and culinary menu identity were retained, while menu and cart behavior now run locally.
+## ♻️ Legacy Modernization
 
-## License
+SajiTap began as a Vue 2 culinary-ordering project. The current version replaces Vue CLI, Vue Router, BootstrapVue, Axios, toast plugins, and the external My JSON Server dependency with a typed React architecture and local state. Useful Indonesian food photography and the original culinary identity were retained.
+
+## 📄 License
 
 This project is provided for portfolio and learning purposes.
