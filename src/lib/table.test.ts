@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { tableFromUrl, withTable } from './table'
+import { tableFromUrl, tableOrderUrl, withTable } from './table'
 import { normalizeTableNumber } from '../store/tableStore'
 
 describe('table context utilities', () => {
@@ -15,5 +15,11 @@ describe('table context utilities', () => {
 
   it('preserves table context in links', () => {
     expect(withTable('/menu?sort=low', '12')).toBe('/menu?sort=low&table=12')
+  })
+
+  it('builds a stable customer ordering URL', () => {
+    expect(tableOrderUrl('12', 'https://sajitap.example/')).toBe(
+      'https://sajitap.example/t/12',
+    )
   })
 })

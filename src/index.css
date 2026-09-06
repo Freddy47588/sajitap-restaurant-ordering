@@ -7,6 +7,15 @@
   --color-cream: #fffaf4;
   --color-ink: #29201c;
 }
+@media print {
+  header,
+  footer {
+    display: none;
+  }
+  body {
+    background: white;
+  }
+}
 @layer base {
   body {
     @apply bg-cream text-ink font-sans antialiased;

@@ -31,6 +31,8 @@ The current release is intentionally frontend-only. Menu data is local, cart sta
 - Locally persisted favorites, recently viewed menus, and lightweight toast feedback
 - Checkout validation, generated local order IDs, and confirmation details
 - Centralized table context preserved across the complete flow with `?table=12` or `/t/12`
+- Typed restaurant-table catalog with active/inactive validation and unavailable-table handling
+- Locally generated table QR codes with copy, PNG download, and print actions
 - Accessible controls, visible focus states, empty states, and a dedicated 404 page
 
 ## 📸 Preview
@@ -128,11 +130,12 @@ The query value follows internal ordering links and automatically prefills the c
 | `/cart`           | Cart review and quantity management |
 | `/checkout`       | Customer and table details          |
 | `/order-success`  | Local order confirmation            |
+| `/admin/tables`   | QR table management foundation      |
 | `*`               | Not-found state                     |
 
 ## 🧪 Testing
 
-The focused unit suite covers Indonesian Rupiah formatting, option-aware cart totals, customization identity, cart behavior, and table-context utilities.
+The focused unit suite covers Indonesian Rupiah formatting, option-aware cart totals, customization identity, cart behavior, table-context utilities, and table-catalog integrity.
 
 ```bash
 npm test
@@ -142,7 +145,7 @@ npm test
 
 - Supabase backend and real order persistence
 - Restaurant administration and kitchen order statuses
-- QR-code generation for each table
+- Supabase-backed table and QR management
 - Staff authentication and role management
 - Real-time order updates
 
