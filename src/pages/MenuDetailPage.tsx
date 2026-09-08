@@ -7,6 +7,7 @@ import { MenuErrorState, MenuLoadingState } from '../components/ui/DataState'
 import { useMenuCatalog } from '../hooks/useMenuCatalog'
 import { useTableContext } from '../hooks/useTableContext'
 import { formatRupiah } from '../lib/format'
+import { areMenuOptionsValid, toggleMenuOption } from '../lib/menuOptions'
 import { optionTotal, useCartStore } from '../store/cartStore'
 import { usePreferenceStore } from '../store/preferenceStore'
 import { useToastStore } from '../store/toastStore'
@@ -22,22 +23,7 @@ function OptionGroup({
   onChange: (options: SelectedOption[]) => void
 }) {
   const choose = (optionId: string) => {
-    const option = group.options.find((entry) => entry.id === optionId)
-    if (!option) return
-    const otherGroups = selected.filter((entry) => entry.groupId !== group.id)
-    const active = selected.some((entry) => entry.optionId === option.id)
-    const inGroup = selected.filter((entry) => entry.groupId === group.id)
-    const value = {
-      groupId: group.id,
-      groupName: group.name,
-      optionId: option.id,
-      optionName: option.name,
-      priceDelta: option.priceDelta,
-    }
-    if (group.maxSelect === 1) onChange([...otherGroups, value])
-    else if (active)
-      onChange(selected.filter((entry) => entry.optionId !== option.id))
-    else if (inGroup.length < group.maxSelect) onChange([...selected, value])
+    onChange(toggleMenuOption(group, selected, optionId))
   }
   return (
     <fieldset>
@@ -143,10 +129,9 @@ export function MenuDetailPage() {
       </section>
     )
 
-  const optionsValid = (item.optionGroups ?? []).every(
-    (group) =>
-      selectedOptions.filter((option) => option.groupId === group.id).length >=
-      group.minSelect,
+  const optionsValid = areMenuOptionsValid(
+    item.optionGroups ?? [],
+    selectedOptions,
   )
   const unitPrice = item.price + optionTotal(selectedOptions)
   const submit = () => {
@@ -235,6 +220,7 @@ export function MenuDetailPage() {
                   <textarea
                     value={note}
                     onChange={(event) => setNote(event.target.value)}
+                    maxLength={500}
                     className="focus:border-terracotta mt-2 min-h-25 w-full rounded-xl border border-stone-300 bg-white p-3 font-normal outline-none"
                     placeholder="Contoh: Sambal dipisah"
                   />
