@@ -68,6 +68,7 @@ export function MenuPage() {
           <button
             key={entry}
             onClick={() => setCategory(entry)}
+            aria-pressed={category === entry}
             className={`rounded-full px-4 py-2 text-sm font-semibold whitespace-nowrap ${category === entry ? 'bg-terracotta text-white' : 'hover:ring-terracotta bg-white text-stone-600 ring-1 ring-stone-200'}`}
           >
             {entry}

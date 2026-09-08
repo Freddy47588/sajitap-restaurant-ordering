@@ -1,10 +1,18 @@
 import { useState } from 'react'
 import { Link, NavLink } from 'react-router-dom'
-import { Menu, ShoppingBag, UtensilsCrossed, X } from 'lucide-react'
+import {
+  Menu,
+  ReceiptText,
+  ShoppingBag,
+  UtensilsCrossed,
+  X,
+} from 'lucide-react'
 import { cartItemCount, useCartStore } from '../../store/cartStore'
 import { useTableContext } from '../../hooks/useTableContext'
 import { TableContextSync } from './TableContextSync'
 import { ToastViewport } from '../ui/ToastViewport'
+import { OfflineBanner } from '../ui/OfflineBanner'
+import { PageMeta } from './PageMeta'
 
 export function Layout({ children }: { children: React.ReactNode }) {
   const [open, setOpen] = useState(false)
@@ -14,7 +22,15 @@ export function Layout({ children }: { children: React.ReactNode }) {
     `transition hover:text-terracotta ${isActive ? 'text-terracotta font-semibold' : ''}`
   return (
     <div className="min-h-screen">
+      <a
+        href="#main-content"
+        className="bg-ink fixed top-2 left-2 z-[100] -translate-y-20 rounded-lg px-4 py-2 font-bold text-white transition focus:translate-y-0"
+      >
+        Lewati ke konten utama
+      </a>
       <TableContextSync />
+      <PageMeta />
+      <OfflineBanner />
       <header className="bg-cream/95 sticky top-0 z-30 border-b border-stone-200 backdrop-blur">
         <nav className="mx-auto flex h-18 max-w-6xl items-center justify-between px-4 sm:px-6">
           <Link
@@ -30,6 +46,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
             </NavLink>
             <NavLink className={navClass} to={to('/menu')}>
               Menu
+            </NavLink>
+            <NavLink className={navClass} to={to('/orders')}>
+              Pesanan Saya
             </NavLink>
           </div>
           <div className="flex items-center gap-2">
@@ -54,6 +73,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
             <button
               className="grid size-10 place-items-center rounded-full hover:bg-orange-100 md:hidden"
               aria-label={open ? 'Tutup navigasi' : 'Buka navigasi'}
+              aria-expanded={open}
+              aria-controls="mobile-navigation"
               onClick={() => setOpen(!open)}
             >
               {open ? <X /> : <Menu />}
@@ -61,7 +82,10 @@ export function Layout({ children }: { children: React.ReactNode }) {
           </div>
         </nav>
         {open && (
-          <div className="bg-cream border-t border-stone-200 px-6 py-4 md:hidden">
+          <div
+            id="mobile-navigation"
+            className="bg-cream border-t border-stone-200 px-6 py-4 md:hidden"
+          >
             <div className="mx-auto flex max-w-6xl flex-col gap-3">
               <NavLink
                 end
@@ -78,11 +102,22 @@ export function Layout({ children }: { children: React.ReactNode }) {
               >
                 Menu
               </NavLink>
+              <NavLink
+                onClick={() => setOpen(false)}
+                className={navClass}
+                to={to('/orders')}
+              >
+                <span className="inline-flex items-center gap-2">
+                  <ReceiptText size={16} /> Pesanan Saya
+                </span>
+              </NavLink>
             </div>
           </div>
         )}
       </header>
-      <main>{children}</main>
+      <main id="main-content" tabIndex={-1}>
+        {children}
+      </main>
       <footer className="mt-16 border-t border-stone-200 bg-white">
         <div className="mx-auto flex max-w-6xl flex-col gap-3 px-4 py-8 text-sm text-stone-500 sm:flex-row sm:items-center sm:justify-between sm:px-6">
           <div>
