@@ -12,3 +12,16 @@ export const orderStatusLabels: Record<OrderStatus, string> = {
 
 export const getOrderStatusLabel = (status: OrderStatus) =>
   orderStatusLabels[status]
+
+export const allowedOrderTransitions: Record<OrderStatus, OrderStatus[]> = {
+  pending: ['confirmed', 'cancelled'],
+  confirmed: ['preparing', 'cancelled'],
+  preparing: ['ready', 'cancelled'],
+  ready: ['served'],
+  served: ['completed'],
+  completed: [],
+  cancelled: [],
+}
+
+export const canTransitionOrder = (from: OrderStatus, to: OrderStatus) =>
+  allowedOrderTransitions[from].includes(to)

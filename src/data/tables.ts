@@ -15,4 +15,10 @@ export const restaurantTables: RestaurantTable[] = Array.from(
 )
 
 export const getRestaurantTable = (number: string | null) =>
-  restaurantTables.find((table) => table.number === number)
+  (typeof localStorage !== 'undefined' &&
+  localStorage.getItem('sajitap-dev-tables')
+    ? (JSON.parse(
+        localStorage.getItem('sajitap-dev-tables')!,
+      ) as RestaurantTable[])
+    : restaurantTables
+  ).find((table) => table.number === number)

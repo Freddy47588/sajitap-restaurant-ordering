@@ -44,11 +44,3 @@ export interface CartItem extends MenuItem {
   cartId: string
   selectedOptions: SelectedOption[]
 }
-export interface CompletedOrder {
-  id: string
-  customerName: string
-  tableNumber: string
-  total: number
-  itemCount: number
-  preparationTime: string
-}

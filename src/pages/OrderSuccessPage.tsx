@@ -1,80 +1,16 @@
-import { CheckCircle2 } from 'lucide-react'
-import { Link, useLocation } from 'react-router-dom'
-import { formatRupiah } from '../lib/format'
+import { Navigate } from 'react-router-dom'
 import { withTable } from '../lib/table'
 import { useOrderStore } from '../store/orderStore'
 export function OrderSuccessPage() {
   const order = useOrderStore((state) => state.latestOrder)
-  const location = useLocation()
-  const table = new URLSearchParams(location.search).get('table')
-  if (!order)
-    return (
-      <section className="mx-auto max-w-xl px-4 py-24 text-center">
-        <h1 className="font-display text-4xl">Belum ada pesanan</h1>
-        <Link
-          className="text-terracotta mt-6 inline-block font-semibold"
-          to={withTable('/menu', table)}
-        >
-          Lihat Menu
-        </Link>
-      </section>
-    )
   return (
-    <section className="mx-auto max-w-xl px-4 py-20 text-center">
-      <span className="mx-auto grid size-20 place-items-center rounded-full bg-emerald-100 text-emerald-600">
-        <CheckCircle2 size={43} />
-      </span>
-      <p className="text-terracotta mt-6 text-sm font-bold tracking-widest uppercase">
-        Terima kasih
-      </p>
-      <h1 className="font-display mt-2 text-4xl">Pesanan Berhasil</h1>
-      <p className="mt-4 text-stone-600">
-        Pesanan Anda sudah kami terima dan akan segera disiapkan.
-      </p>
-      <div className="mt-8 rounded-2xl border border-stone-200 bg-white p-6 text-left">
-        <div className="flex justify-between border-b border-stone-100 pb-4">
-          <span className="text-stone-500">ID Pesanan</span>
-          <strong>{order.id}</strong>
-        </div>
-        <div className="mt-4 grid grid-cols-2 gap-5">
-          <div>
-            <p className="text-sm text-stone-500">Pemesan</p>
-            <p className="mt-1 font-bold">{order.customerName}</p>
-          </div>
-          <div>
-            <p className="text-sm text-stone-500">Nomor meja</p>
-            <p className="mt-1 font-bold">{order.tableNumber}</p>
-          </div>
-          <div>
-            <p className="text-sm text-stone-500">Total item</p>
-            <p className="mt-1 font-bold">{order.itemCount}</p>
-          </div>
-          <div>
-            <p className="text-sm text-stone-500">Total order</p>
-            <p className="text-terracotta mt-1 font-bold">
-              {formatRupiah(order.total)}
-            </p>
-          </div>
-          <div>
-            <p className="text-sm text-stone-500">Estimasi siap</p>
-            <p className="mt-1 font-bold">{order.preparationTime}</p>
-          </div>
-        </div>
-      </div>
-      <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:justify-center">
-        <Link
-          className="hover:border-terracotta rounded-xl border border-stone-300 px-5 py-3 font-bold"
-          to={withTable('/', table)}
-        >
-          Kembali ke Beranda
-        </Link>
-        <Link
-          className="bg-terracotta rounded-xl px-5 py-3 font-bold text-white hover:bg-[#7f2e18]"
-          to={withTable('/menu', table)}
-        >
-          Pesan Lagi
-        </Link>
-      </div>
-    </section>
+    <Navigate
+      replace
+      to={
+        order
+          ? withTable(`/order/${order.orderCode}`, order.tableNumber)
+          : '/orders'
+      }
+    />
   )
 }
