@@ -1,6 +1,6 @@
-insert into public.restaurants (id, name, slug)
-values ('00000000-0000-0000-0000-000000000001', 'SajiTap Demo Restaurant', 'sajitap-demo')
-on conflict (id) do nothing;
+insert into public.restaurants (id, name, slug, is_demo)
+values ('00000000-0000-0000-0000-000000000001', 'SajiTap Demo Restaurant', 'sajitap-demo', true)
+on conflict (id) do update set is_demo = excluded.is_demo;
 
 insert into public.restaurant_tables (restaurant_id, table_number, label, qr_token, active)
 select '00000000-0000-0000-0000-000000000001', number::text, 'Meja ' || number, 'sajitap-demo-' || lpad(number::text, 2, '0'), number <> 8

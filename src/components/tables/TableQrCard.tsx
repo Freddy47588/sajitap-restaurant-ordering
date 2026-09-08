@@ -9,7 +9,11 @@ export function TableQrCard({ table }: { table: RestaurantTable }) {
   const [qrImage, setQrImage] = useState('')
   const [qrError, setQrError] = useState(false)
   const showToast = useToastStore((state) => state.show)
-  const orderingUrl = tableOrderUrl(table.number, window.location.origin)
+  const orderingUrl = tableOrderUrl(
+    table.number,
+    window.location.origin,
+    table.qrToken,
+  )
 
   useEffect(() => {
     let active = true

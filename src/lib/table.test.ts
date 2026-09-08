@@ -22,4 +22,10 @@ describe('table context utilities', () => {
       'https://sajitap.example/t/12',
     )
   })
+
+  it('adds a rotatable QR capability when provided', () => {
+    expect(
+      tableOrderUrl('12', 'https://sajitap.example/', 'secret token'),
+    ).toBe('https://sajitap.example/t/12?token=secret%20token')
+  })
 })

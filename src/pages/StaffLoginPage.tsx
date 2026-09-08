@@ -2,13 +2,7 @@ import { LoaderCircle, LockKeyhole } from 'lucide-react'
 import { useState } from 'react'
 import { Navigate, useNavigate, useSearchParams } from 'react-router-dom'
 import { useStaffAuth } from '../hooks/useStaffAuth'
-
-const roleHome = {
-  admin: '/admin',
-  kitchen: '/kitchen',
-  cashier: '/cashier',
-  waiter: '/kitchen',
-} as const
+import { staffDestination, staffHomeByRole } from '../lib/staffRoutes'
 
 export function StaffLoginPage() {
   const { profile, signIn } = useStaffAuth()
@@ -18,7 +12,7 @@ export function StaffLoginPage() {
   const [password, setPassword] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  if (profile) return <Navigate replace to={roleHome[profile.role]} />
+  if (profile) return <Navigate replace to={staffHomeByRole[profile.role]} />
   const submit = async (event: React.FormEvent) => {
     event.preventDefault()
     setSubmitting(true)
@@ -26,7 +20,7 @@ export function StaffLoginPage() {
     try {
       const staff = await signIn(email, password)
       const requested = params.get('redirect')
-      navigate(requested?.startsWith('/') ? requested : roleHome[staff.role], {
+      navigate(staffDestination(staff.role, requested), {
         replace: true,
       })
     } catch (reason) {
@@ -42,11 +36,15 @@ export function StaffLoginPage() {
           <LockKeyhole />
         </span>
         <p className="text-terracotta mt-6 text-sm font-bold tracking-widest uppercase">
-          Area staf
+          Area Staf SajiTap
         </p>
         <h1 className="font-display mt-2 text-4xl">Masuk ke SajiTap</h1>
         <p className="mt-3 text-sm text-stone-600">
-          Gunakan akun staf restoran Anda.
+          Masuk menggunakan akun staf restoran untuk mengakses dashboard sesuai
+          peran Anda.
+        </p>
+        <p className="mt-2 text-xs font-semibold tracking-wide text-stone-500">
+          Admin • Dapur • Kasir • Pelayan
         </p>
         <form onSubmit={submit} className="mt-7 space-y-5">
           <label className="block font-semibold">
@@ -93,6 +91,7 @@ export function StaffLoginPage() {
             <p className="mt-1">admin@sajitap.local / demo-admin</p>
             <p>kitchen@sajitap.local / demo-kitchen</p>
             <p>cashier@sajitap.local / demo-cashier</p>
+            <p>waiter@sajitap.local / demo-waiter</p>
           </div>
         )}
       </div>

@@ -1,5 +1,11 @@
 import { lazy, Suspense } from 'react'
-import { Navigate, Route, Routes, useParams } from 'react-router-dom'
+import {
+  Navigate,
+  Route,
+  Routes,
+  useParams,
+  useSearchParams,
+} from 'react-router-dom'
 import { Layout } from './components/layout/Layout'
 import { HomePage } from './pages/HomePage'
 import { useTableStore, normalizeTableNumber } from './store/tableStore'
@@ -52,6 +58,11 @@ const CashierPage = lazy(() =>
     default: module.CashierPage,
   })),
 )
+const WaiterPage = lazy(() =>
+  import('./pages/WaiterPage').then((module) => ({
+    default: module.WaiterPage,
+  })),
+)
 const AdminLayout = lazy(() =>
   import('./components/admin/AdminLayout').then((module) => ({
     default: module.AdminLayout,
@@ -100,8 +111,9 @@ const NotFoundPage = lazy(() =>
 
 function TableEntry() {
   const { tableNumber } = useParams()
+  const [params] = useSearchParams()
   const table = normalizeTableNumber(tableNumber)
-  useTableStore.getState().setTableNumber(table)
+  useTableStore.getState().setTableContext(table, params.get('token'))
   return (
     <Navigate
       replace
@@ -164,6 +176,10 @@ export default function App() {
           <Route
             path="/cashier"
             element={staffPage(['admin', 'cashier'], <CashierPage />)}
+          />
+          <Route
+            path="/waiter"
+            element={staffPage(['admin', 'waiter'], <WaiterPage />)}
           />
           <Route path="*" element={<NotFoundPage />} />
         </Routes>

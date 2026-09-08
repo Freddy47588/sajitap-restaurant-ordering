@@ -9,6 +9,7 @@ import type {
   PersistedOrder,
 } from '../types/order'
 import { menuService } from './menuService'
+import { useTableStore } from '../store/tableStore'
 
 interface OrderRpcResponse {
   id: string
@@ -220,6 +221,7 @@ export const orderService = {
     const { data, error } = await client.rpc('create_customer_order', {
       p_restaurant_slug: input.restaurantSlug,
       p_table_number: input.tableNumber,
+      p_qr_token: useTableStore.getState().qrToken,
       p_customer_name: input.customerName,
       p_customer_note: input.customerNote,
       p_items: input.items.map((item) => ({

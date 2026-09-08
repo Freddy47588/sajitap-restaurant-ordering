@@ -125,6 +125,12 @@ export function Layout({ children }: { children: React.ReactNode }) {
             <span className="ml-2">Tap. Order. Enjoy.</span>
           </div>
           <p>Restaurant table-ordering experience · Portfolio project</p>
+          <Link
+            to="/staff/login"
+            className="hover:text-terracotta transition hover:underline"
+          >
+            Masuk Staf
+          </Link>
         </div>
       </footer>
       <ToastViewport />

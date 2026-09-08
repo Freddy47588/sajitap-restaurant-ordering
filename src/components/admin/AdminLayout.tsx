@@ -56,6 +56,15 @@ export function AdminLayout() {
         </button>
       </aside>
       <main className="min-w-0">
+        {profile?.isDemo && (
+          <div
+            role="status"
+            className="mb-5 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-semibold text-amber-900"
+          >
+            Admin demo bersifat hanya-baca. Perubahan konfigurasi dan status
+            pesanan diblokir oleh database.
+          </div>
+        )}
         <Outlet />
       </main>
     </div>

@@ -28,4 +28,12 @@ describe('staff auth development adapter', () => {
       authService.signIn('admin@sajitap.local', 'wrong'),
     ).rejects.toThrow('tidak sesuai')
   })
+  it('authenticates the local waiter identity with its own role', async () => {
+    const profile = await authService.signIn(
+      'waiter@sajitap.local',
+      'demo-waiter',
+    )
+    expect(profile.role).toBe('waiter')
+    expect(profile.isDemo).toBe(false)
+  })
 })

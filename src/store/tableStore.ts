@@ -3,7 +3,8 @@ import { createJSONStorage, persist } from 'zustand/middleware'
 
 interface TableState {
   tableNumber: string | null
-  setTableNumber: (tableNumber: string | null) => void
+  qrToken: string | null
+  setTableContext: (tableNumber: string | null, qrToken?: string | null) => void
 }
 
 export const normalizeTableNumber = (value: string | null | undefined) => {
@@ -17,7 +18,12 @@ export const useTableStore = create<TableState>()(
   persist(
     (set) => ({
       tableNumber: null,
-      setTableNumber: (tableNumber) => set({ tableNumber }),
+      qrToken: null,
+      setTableContext: (tableNumber, qrToken) =>
+        set((state) => ({
+          tableNumber,
+          qrToken: qrToken === undefined ? state.qrToken : qrToken,
+        })),
     }),
     {
       name: 'sajitap-table',

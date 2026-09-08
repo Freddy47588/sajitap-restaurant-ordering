@@ -8,5 +8,11 @@ export const tableFromUrl = (pathname: string, search: string) => {
   return routeMatch?.[1] ?? new URLSearchParams(search).get('table')
 }
 
-export const tableOrderUrl = (tableNumber: string, origin: string) =>
-  `${origin.replace(/\/$/, '')}/t/${encodeURIComponent(tableNumber)}`
+export const tableOrderUrl = (
+  tableNumber: string,
+  origin: string,
+  qrToken?: string,
+) => {
+  const base = `${origin.replace(/\/$/, '')}/t/${encodeURIComponent(tableNumber)}`
+  return qrToken ? `${base}?token=${encodeURIComponent(qrToken)}` : base
+}

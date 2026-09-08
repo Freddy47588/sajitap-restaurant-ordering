@@ -5,12 +5,16 @@ import { normalizeTableNumber, useTableStore } from '../../store/tableStore'
 
 export function TableContextSync() {
   const location = useLocation()
-  const setTableNumber = useTableStore((state) => state.setTableNumber)
+  const setTableContext = useTableStore((state) => state.setTableContext)
 
   useEffect(() => {
     const rawTable = tableFromUrl(location.pathname, location.search)
-    if (rawTable !== null) setTableNumber(normalizeTableNumber(rawTable))
-  }, [location.pathname, location.search, setTableNumber])
+    if (rawTable !== null)
+      setTableContext(
+        normalizeTableNumber(rawTable),
+        new URLSearchParams(location.search).get('token') ?? undefined,
+      )
+  }, [location.pathname, location.search, setTableContext])
 
   return null
 }

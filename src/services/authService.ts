@@ -6,6 +6,7 @@ const localProfiles: Record<string, StaffProfile & { password: string }> = {
     restaurantId: 'sajitap-demo',
     fullName: 'Admin SajiTap',
     role: 'admin',
+    isDemo: false,
     password: 'demo-admin',
   },
   'kitchen@sajitap.local': {
@@ -13,6 +14,7 @@ const localProfiles: Record<string, StaffProfile & { password: string }> = {
     restaurantId: 'sajitap-demo',
     fullName: 'Tim Dapur',
     role: 'kitchen',
+    isDemo: false,
     password: 'demo-kitchen',
   },
   'cashier@sajitap.local': {
@@ -20,7 +22,16 @@ const localProfiles: Record<string, StaffProfile & { password: string }> = {
     restaurantId: 'sajitap-demo',
     fullName: 'Kasir SajiTap',
     role: 'cashier',
+    isDemo: false,
     password: 'demo-cashier',
+  },
+  'waiter@sajitap.local': {
+    id: 'local-waiter',
+    restaurantId: 'sajitap-demo',
+    fullName: 'Pelayan SajiTap',
+    role: 'waiter',
+    isDemo: false,
+    password: 'demo-waiter',
   },
 }
 
@@ -35,7 +46,7 @@ const loadSupabaseProfile = async (
   const { requireSupabase } = await import('../lib/supabase')
   const { data, error } = await requireSupabase()
     .from('profiles')
-    .select('id, restaurant_id, full_name, role')
+    .select('id, restaurant_id, full_name, role, is_demo')
     .eq('id', userId)
     .maybeSingle()
   if (error) throw new Error(`Profil staf gagal dimuat: ${error.message}`)
@@ -45,6 +56,7 @@ const loadSupabaseProfile = async (
         restaurantId: data.restaurant_id,
         fullName: data.full_name,
         role: data.role as StaffRole,
+        isDemo: data.is_demo,
       }
     : null
 }
@@ -92,6 +104,7 @@ export const authService = {
         restaurantId: account.restaurantId,
         fullName: account.fullName,
         role: account.role,
+        isDemo: account.isDemo,
       }
       localStorage.setItem(storageKey, JSON.stringify(profile))
       return profile

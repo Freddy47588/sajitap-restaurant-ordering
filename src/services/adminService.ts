@@ -5,6 +5,7 @@ import type { MenuItem } from '../types/menu'
 import type { StaffProfile } from '../types/staff'
 import type { RestaurantTable } from '../types/table'
 import { menuService } from './menuService'
+import { authService } from './authService'
 
 export interface ManagedCategory {
   id: string
@@ -15,6 +16,11 @@ export interface ManagedCategory {
 const usesLocalData = () =>
   import.meta.env.VITE_DATA_MODE === 'local' ||
   (!import.meta.env.VITE_DATA_MODE && import.meta.env.DEV)
+const assertWritableAdmin = async () => {
+  const profile = await authService.getCurrentStaff()
+  if (profile?.role === 'admin' && profile.isDemo)
+    throw new Error('Admin demo hanya memiliki akses baca.')
+}
 const restaurantId = async () => {
   const { requireSupabase } = await import('../lib/supabase')
   const { data, error } = await requireSupabase()
@@ -39,6 +45,7 @@ export const adminService = {
       )
       return
     }
+    await assertWritableAdmin()
     const { requireSupabase } = await import('../lib/supabase')
     const client = requireSupabase()
     const ownerId = await restaurantId()
@@ -143,6 +150,7 @@ export const adminService = {
       localStorage.setItem('sajitap-dev-categories', JSON.stringify(categories))
       return
     }
+    await assertWritableAdmin()
     const { requireSupabase } = await import('../lib/supabase')
     const ownerId = await restaurantId()
     const { error } = await requireSupabase()
@@ -185,6 +193,7 @@ export const adminService = {
       localStorage.setItem('sajitap-dev-tables', JSON.stringify(tables))
       return
     }
+    await assertWritableAdmin()
     const { requireSupabase } = await import('../lib/supabase')
     const ownerId = await restaurantId()
     const { error } = await requireSupabase()
@@ -210,25 +219,35 @@ export const adminService = {
           restaurantId: 'sajitap-demo',
           fullName: 'Admin SajiTap',
           role: 'admin',
+          isDemo: false,
         },
         {
           id: 'local-kitchen',
           restaurantId: 'sajitap-demo',
           fullName: 'Tim Dapur',
           role: 'kitchen',
+          isDemo: false,
         },
         {
           id: 'local-cashier',
           restaurantId: 'sajitap-demo',
           fullName: 'Kasir SajiTap',
           role: 'cashier',
+          isDemo: false,
+        },
+        {
+          id: 'local-waiter',
+          restaurantId: 'sajitap-demo',
+          fullName: 'Pelayan SajiTap',
+          role: 'waiter',
+          isDemo: false,
         },
       ]
     const { requireSupabase } = await import('../lib/supabase')
     const ownerId = await restaurantId()
     const { data, error } = await requireSupabase()
       .from('profiles')
-      .select('id,restaurant_id,full_name,role')
+      .select('id,restaurant_id,full_name,role,is_demo')
       .eq('restaurant_id', ownerId)
     if (error) throw new Error(error.message)
     return data.map((entry) => ({
@@ -236,6 +255,7 @@ export const adminService = {
       restaurantId: entry.restaurant_id,
       fullName: entry.full_name,
       role: entry.role,
+      isDemo: entry.is_demo,
     }))
   },
 }

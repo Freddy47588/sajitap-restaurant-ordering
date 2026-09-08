@@ -6,4 +6,5 @@ export interface StaffProfile {
   restaurantId: string
   fullName: string
   role: StaffRole
+  isDemo: boolean
 }

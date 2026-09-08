@@ -44,3 +44,7 @@ Customer ordering uses a background Supabase anonymous Auth session—there is n
 The hardening migration revokes bare anon-role execution of order creation and limits one authenticated session to five orders per ten-minute window. This is a database guard, not a substitute for project-level Auth rate limits or edge abuse protection in a public production deployment.
 
 Staff authentication uses Supabase email/password identities joined one-to-one to `public.profiles`. Creating an Auth user alone grants no restaurant access: a trusted administrator must also provision its profile with the correct `restaurant_id` and role. RLS remains authoritative even though the React router also performs role-aware navigation checks.
+
+Public demo profiles set `is_demo = true`. The database keeps the demo administrator read-only while preserving each operational role's tenant-scoped workflow. Production restaurant QR URLs carry a rotatable table token checked during order creation; the seeded demo restaurant is explicitly public for the documented portfolio entry route.
+
+Use `supabase/reset_demo.sql` only from a trusted database-owner session to clear synthetic orders and restore the demo catalog/table flags. It is intentionally not exposed through the application.
