@@ -5,175 +5,140 @@
 
 **Tap. Order. Enjoy.**
 
-A warm, mobile-first restaurant table-ordering experience built for quick ordering from a QR-linked table.
+A mobile-first restaurant table-ordering system with realtime kitchen operations.
 
 ![React](https://img.shields.io/badge/React-19-149ECA?logo=react&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white)
 ![Vite](https://img.shields.io/badge/Vite-6-646CFF?logo=vite&logoColor=white)
-![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4-06B6D4?logo=tailwindcss&logoColor=white)
-![Zustand](https://img.shields.io/badge/State-Zustand-433E38)
-![Portfolio](https://img.shields.io/badge/Project-Portfolio-9F3C20)
+![Supabase](https://img.shields.io/badge/Supabase-Postgres%20%7C%20Auth%20%7C%20Realtime-3FCF8E?logo=supabase&logoColor=white)
+![Vitest](https://img.shields.io/badge/Tests-Vitest-6E9F18?logo=vitest&logoColor=white)
 </div>
 
-## 🍽️ Overview
+## Overview
 
-SajiTap modernizes an earlier Vue 2 culinary-ordering exercise into a focused customer experience. After scanning a table QR link, guests can browse local Indonesian dishes, choose typed product options and add-ons, manage a persistent cart, and complete a simulated checkout without waiting for a server.
+SajiTap turns a table QR scan into a complete restaurant workflow. Guests browse an Indonesian menu, customize items, submit a server-validated order, and follow its status in realtime. Kitchen, cashier, and administrator views operate on the same tenant-scoped order data.
 
-The application now includes a Supabase-ready relational schema, seed data, RLS foundations, and a centralized asynchronous menu repository. Local catalog mode remains available explicitly for frontend development. Submitted restaurant orders are **not persisted yet**; trusted order creation is the next phase.
+The application can run with a local browser-backed development adapter or a real Supabase backend. It has not been presented as deployed.
 
-## ✨ Features
+## Features
 
-- Responsive, food-focused interface in Bahasa Indonesia
-- Menu search, five food and drink categories, favorite filtering, availability states, and price sorting
-- Generic single- and multi-select product options with option-aware pricing
-- Item detail with preparation estimates, deterministic pairings, quantity controls, notes, and a live subtotal
-- Persistent cart with editable customizations powered by Zustand and `localStorage`
-- Locally persisted favorites, recently viewed menus, and lightweight toast feedback
-- Checkout validation, generated local order IDs, and confirmation details
-- Centralized table context preserved across the complete flow with `?table=12` or `/t/12`
-- Typed restaurant-table catalog with active/inactive validation and unavailable-table handling
-- Locally generated table QR codes with copy, PNG download, and print actions
-- Supabase-ready menu repository with loading, retry, and explicit failure states
-- Postgres schema, development seed, staff-role model, and initial Row Level Security policies
-- Accessible controls, visible focus states, empty states, and a dedicated 404 page
+- Stable QR table routes with inactive-table validation and printable/downloadable QR codes
+- Searchable five-category menu, favorites, recently viewed items, deterministic pairings, and preparation estimates
+- Typed required/multi-select options, add-on pricing, notes, editable customizations, and persistent cart state
+- Transactional order RPC with trusted prices, availability checks, option validation, snapshots, friendly codes, and session rate limiting
+- Device-scoped order history and realtime customer progress tracking
+- Supabase Auth for anonymous diners and role-based staff (`admin`, `kitchen`, `cashier`, `waiter`)
+- Tenant-scoped RLS plus database-enforced order, kitchen, and payment transitions
+- Realtime kitchen display, cashier workflow, nested administration, QR/table management, and actual order analytics
+- Installable PWA shell with offline feedback and private API responses excluded from caching
+- Accessible focus behavior, semantic controls, error recovery, responsive layouts, and route-level code splitting
 
-## 📸 Preview
+## Screenshots
 
-Project screenshots can be added without changing the README structure:
+| Customer home                                       | Menu                                       |
+| --------------------------------------------------- | ------------------------------------------ |
+| ![SajiTap customer home](docs/screenshots/home.png) | ![SajiTap menu](docs/screenshots/menu.png) |
 
-| Home                        | Menu                        | Cart                        |
-| --------------------------- | --------------------------- | --------------------------- |
-| `docs/screenshots/home.png` | `docs/screenshots/menu.png` | `docs/screenshots/cart.png` |
+![SajiTap staff login](docs/screenshots/staff-login.png)
 
-> Screenshots are intentionally not embedded until real captures are added to these paths.
-
-## 🔄 User Flow
+## Customer Flow
 
 ```text
-QR/table link → Home → Menu → Item detail → Cart → Checkout → Order success
+QR /t/12 → menu → item options → cart → checkout
+           → trusted database order → realtime tracking → device history
 ```
 
-## 🛠️ Tech Stack
+Customers are assigned an anonymous Supabase Auth session in the background; there is no customer account screen.
 
-| Technology   | Purpose                                 |
-| ------------ | --------------------------------------- |
-| React        | Component-based user interface          |
-| TypeScript   | Static types and domain modeling        |
-| Vite         | Development server and production build |
-| Tailwind CSS | Responsive styling and design tokens    |
-| React Router | Client-side routes and table-query flow |
-| Zustand      | Persistent cart and local order state   |
-| Supabase     | Postgres, Auth, RLS, and backend client |
-| Vitest       | Focused unit tests                      |
-| Lucide React | Accessible interface icons              |
-
-## 🏗️ Architecture
+## Staff Flow
 
 ```text
-src/
-├── assets/           # Source-managed hero imagery
-├── components/       # Layout, menu, cart, and reusable UI
-├── context/          # Shared asynchronous catalog state
-├── data/menu.ts      # Development-mode menu catalog
-├── lib/              # Currency formatting and route helpers
-├── pages/            # Route-level screens
-├── store/            # Persistent cart and transient order state
-├── services/         # Supabase-aware data repositories
-├── types/            # Shared domain types
-├── App.tsx
-└── main.tsx
-
-public/
-├── assets/images/    # Static menu photography
-└── brand/            # SajiTap logo and favicon
-
-supabase/
-├── migrations/       # Versioned database schema and RLS
-└── seed.sql           # Demo restaurant catalog
+Staff login
+  ├─ Kitchen: pending → confirmed → preparing → ready
+  ├─ Cashier: payment state + served/completed
+  └─ Admin: orders, menu, options, categories, tables, staff, analytics
 ```
 
-The local data layer is kept separate from UI code so it can later be replaced by a backend integration without rebuilding the presentation layer.
+## Architecture
 
-## 🚀 Getting Started
+UI components call a service layer rather than Supabase directly. Zustand owns device state, React context owns asynchronous catalog/auth state, Postgres owns durable restaurant data, and RPCs own privileged state transitions.
+
+See [`docs/architecture.md`](docs/architecture.md), [`docs/database.md`](docs/database.md), and [`docs/security.md`](docs/security.md) for the runtime boundaries, schema setup, and authorization model.
+
+## Tech Stack
+
+| Technology              | Purpose                                          |
+| ----------------------- | ------------------------------------------------ |
+| React 19 + React Router | Customer and staff application                   |
+| TypeScript              | Strict domain modeling                           |
+| Vite + Vite PWA         | Build, lazy chunks, manifest, and offline shell  |
+| Tailwind CSS            | Mobile-first visual system                       |
+| Zustand                 | Cart, table, preferences, and device order state |
+| Supabase                | Postgres, Auth, Realtime, RLS, and RPCs          |
+| Vitest                  | High-value domain and service tests              |
+| QRCode + Lucide React   | Table QR generation and interface icons          |
+
+## Database
+
+Versioned SQL in `supabase/migrations/` creates restaurant, table, catalog, order, snapshot, and staff-profile data. `supabase/seed.sql` provides the demo restaurant and menu. Critical totals are calculated in Postgres; the browser never supplies an authoritative price.
+
+Staff Auth users are environment-specific and are therefore not created by the seed.
+
+## Local Development
 
 ```bash
 git clone https://github.com/Freddy47588/sajitap-restaurant-ordering.git
 cd sajitap-restaurant-ordering
 npm install
+copy .env.example .env.local
 npm run dev
 ```
 
-Copy `.env.example` to `.env.local`. The example uses the explicit local data mode. See [`docs/database.md`](docs/database.md) for Supabase CLI setup and database security notes.
+Open `http://localhost:5173/t/12` to simulate a table scan. The checked-in `.env.example` selects local mode, which includes documented demo staff accounts on the login screen.
 
-### Environment variables
+To use Supabase, install its CLI, start Docker, run `supabase start` and `supabase db reset`, then use the local project URL and anon key. Full instructions are in [`docs/database.md`](docs/database.md).
 
-| Variable                 | Purpose                                      |
+## Environment Variables
+
+| Variable                 | Description                                  |
 | ------------------------ | -------------------------------------------- |
-| `VITE_DATA_MODE`         | `local` for development or `supabase`        |
+| `VITE_DATA_MODE`         | `local` or `supabase`                        |
+| `VITE_RESTAURANT_SLUG`   | Public restaurant tenant slug                |
 | `VITE_SUPABASE_URL`      | Supabase project URL                         |
-| `VITE_SUPABASE_ANON_KEY` | Public browser key; never use a service role |
+| `VITE_SUPABASE_ANON_KEY` | Public browser key; never a service-role key |
 
-Open the local URL shown by Vite. To simulate scanning a table QR code, visit:
-
-```text
-http://localhost:5173/?table=12
-```
-
-The stable table-entry route is also supported:
-
-```text
-http://localhost:5173/t/12
-```
-
-The query value follows internal ordering links and automatically prefills the checkout table field.
-
-## 📜 Available Scripts
-
-| Command                | Description                              |
-| ---------------------- | ---------------------------------------- |
-| `npm run dev`          | Start the Vite development server        |
-| `npm run build`        | Type-check and create a production build |
-| `npm run lint`         | Run ESLint                               |
-| `npm test`             | Run the Vitest suite once                |
-| `npm run format`       | Format project files with Prettier       |
-| `npm run format:check` | Verify formatting without changing files |
-
-## 📱 Screens & Routes
-
-| Route             | Screen                              |
-| ----------------- | ----------------------------------- |
-| `/`               | Landing page and featured menu      |
-| `/t/:tableNumber` | Stable table entry route            |
-| `/menu`           | Searchable menu catalog             |
-| `/menu/:id`       | Item detail and customization       |
-| `/cart`           | Cart review and quantity management |
-| `/checkout`       | Customer and table details          |
-| `/order-success`  | Local order confirmation            |
-| `/admin/tables`   | QR table management foundation      |
-| `*`               | Not-found state                     |
-
-## 🧪 Testing
-
-The focused unit suite covers Indonesian Rupiah formatting, option-aware cart totals, customization identity, cart behavior, table-context utilities, table-catalog integrity, and the development menu repository.
+## Testing
 
 ```bash
+npm run lint
 npm test
+npm run build
+npm run format:check
+npm audit
 ```
 
-## 🗺️ Roadmap
+The focused suite covers currency formatting, table parsing/catalog integrity, option selection rules, cart identity and totals, server-authoritative behavior in the local order adapter, status transitions, authentication, menu loading, and device order storage.
 
-- Trusted Supabase order creation and persistent order tracking
-- Restaurant administration and kitchen order statuses
-- Supabase-backed table and QR management
-- Staff authentication and role management
-- Real-time order updates
+## Routes
 
-These items are planned improvements and are not part of the current frontend demo.
+| Area           | Routes                                                                                                             |
+| -------------- | ------------------------------------------------------------------------------------------------------------------ |
+| Customer       | `/`, `/t/:tableNumber`, `/menu`, `/menu/:id`, `/cart`, `/checkout`, `/order/:orderCode`, `/orders`                 |
+| Operations     | `/kitchen`, `/cashier`                                                                                             |
+| Administration | `/admin`, `/admin/orders`, `/admin/menu`, `/admin/categories`, `/admin/tables`, `/admin/staff`, `/admin/analytics` |
+| Authentication | `/staff/login`                                                                                                     |
 
-## ♻️ Legacy Modernization
+## Roadmap
 
-SajiTap began as a Vue 2 culinary-ordering project. The current version replaces Vue CLI, Vue Router, BootstrapVue, Axios, toast plugins, and the external My JSON Server dependency with a typed React architecture and local state. Useful Indonesian food photography and the original culinary identity were retained.
+- Provision staff invitations and password recovery through a trusted server-side administration path
+- Add deployment-specific monitoring, edge rate limits, and backup/restore drills
+- Add maintained browser end-to-end tests when a CI browser environment is selected
+- Evaluate SSR or prerendering only if public menu discovery becomes a product requirement
 
-## 📄 License
+## Legacy Modernization
+
+SajiTap began as a Vue 2 culinary-ordering exercise. The current application replaces Vue CLI, Vue Router, BootstrapVue, Axios, toast plugins, and the external JSON demo dependency with a strict React architecture, modern state management, a relational backend, realtime operations, and defense-in-depth authorization. The Indonesian food identity and useful original photography were retained.
+
+## License
 
 This project is provided for portfolio and learning purposes.
