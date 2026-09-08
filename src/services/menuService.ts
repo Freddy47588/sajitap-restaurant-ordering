@@ -1,4 +1,5 @@
 import { menuItems as localMenuItems } from '../data/menu'
+import { restaurantConfig } from '../config/restaurant'
 import type { MenuCategory, MenuItem, MenuOptionGroup } from '../types/menu'
 
 interface MenuRow {
@@ -12,6 +13,7 @@ interface MenuRow {
   available: boolean
   featured: boolean
   preparation_time: string
+  restaurants: { slug: string } | null
   categories: { name: MenuCategory } | null
   menu_option_groups: Array<{
     id: string
@@ -53,7 +55,13 @@ export const menuService = {
   async list(): Promise<MenuItem[]> {
     const dataMode = import.meta.env.VITE_DATA_MODE
     if (dataMode === 'local' || (!dataMode && import.meta.env.DEV)) {
-      return structuredClone(localMenuItems)
+      const saved =
+        typeof localStorage === 'undefined'
+          ? null
+          : localStorage.getItem('sajitap-dev-menu')
+      return saved
+        ? (JSON.parse(saved) as MenuItem[])
+        : structuredClone(localMenuItems)
     }
     if (dataMode && dataMode !== 'supabase') {
       throw new Error(`VITE_DATA_MODE tidak valid: ${dataMode}`)
@@ -64,10 +72,12 @@ export const menuService = {
       .from('menu_items')
       .select(
         `id, code, name, slug, description, price, image_url, available, featured, preparation_time,
+        restaurants!inner(slug),
         categories(name),
         menu_option_groups(id, name, required, min_select, max_select, menu_options(id, name, price_delta, available, sort_order)),
         recommendations:menu_item_recommendations!menu_item_id(recommended_item:menu_items!recommended_menu_item_id(slug))`,
       )
+      .eq('restaurants.slug', restaurantConfig.slug)
       .order('sort_order')
 
     if (error) throw new Error(`Menu gagal dimuat: ${error.message}`)
