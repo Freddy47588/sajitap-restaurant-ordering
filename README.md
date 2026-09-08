@@ -21,8 +21,8 @@ A full-stack QR restaurant ordering system with realtime customer and staff work
 
 The public Netlify URL has not been provisioned yet. Once deployed, replace this note with two direct links:
 
-- **Customer Demo:** `<site-url>/t/12`
-- **Staff Login:** `<site-url>/staff/login`
+- **Customer Demo:** `https://sajitap-demo.netlify.app/`
+- **Staff Login:** `https://sajitap-demo.netlify.app//staff/login`
 
 Customer demo journey: open Table 12, browse and customize the menu, add items to the cart, check out, then follow the order in realtime. Customers do not use the staff login.
 
